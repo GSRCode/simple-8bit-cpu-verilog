@@ -1,0 +1,13 @@
+# Icarus Verilog compiled simulation outputs
+*_test
+
+# Waveform files
+*.vcd
+*.fst
+
+# Temporary/editor files
+*~
+*.swp
+
+# VS Code
+.vscode/
