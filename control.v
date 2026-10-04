@@ -7,7 +7,8 @@ module control (
     output reg   ir_load,
     output reg   operand_load,
     output reg   register_write,
-    output reg   pc_load
+    output reg   pc_load,
+    output reg   conditional_jump
 );
 
 
@@ -19,7 +20,7 @@ localparam FETCH         = 2'b00;
 localparam DECODE        = 2'b01;
 localparam FETCH_OPERAND = 2'b10;
 localparam EXECUTE       = 2'b11;
-localparam JMP           = 4'b1010;
+
 
 
 reg [1:0] state;
@@ -35,7 +36,8 @@ localparam ADD = 4'b0110;
 localparam SUB = 4'b0111;
 localparam AND = 4'b1000;
 localparam OR  = 4'b1001;
-
+localparam JZ  = 4'b1011;
+localparam JMP = 4'b1010;
 
 /*
  * State register.
@@ -66,6 +68,7 @@ always @(*) begin
     operand_load   = 1'b0;
     register_write = 1'b0;
     pc_load        = 1'b0;
+    conditional_jump = 1'b0;
 
     next_state = state;
 
@@ -87,6 +90,8 @@ always @(*) begin
             if (instruction[7:4] == LDI)
                 next_state = FETCH_OPERAND;
             else if (instruction[7:4] == JMP)
+                next_state = FETCH_OPERAND;
+            else if (instruction[7:4] == JZ)
                 next_state = FETCH_OPERAND;
             else if (instruction[7:4] == ADD)
                 next_state = EXECUTE;
@@ -126,6 +131,8 @@ always @(*) begin
                 register_write = 1'b1;
             else if (instruction[7:4] == JMP)
                 pc_load = 1'b1;
+            else if (instruction[7:4] == JZ)
+                conditional_jump = 1'b1;
 
             next_state = FETCH;
 

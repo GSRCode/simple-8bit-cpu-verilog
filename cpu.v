@@ -12,6 +12,7 @@ localparam ADD = 4'b0110;
 localparam SUB = 4'b0111;
 localparam AND = 4'b1000;
 localparam OR  = 4'b1001;
+localparam JZ  = 4'b1011;
 
 /*
  * Control signals
@@ -23,6 +24,8 @@ wire operand_load;
 wire register_write;
 
 wire pc_load;
+wire pc_load_control;
+wire conditional_jump;
 
 
 /*
@@ -62,6 +65,10 @@ assign alu_operation =
     (ir_value[7:4] == OR)  ? 2'b11 :
                              2'b00;
 
+assign pc_load =
+    pc_load_control ||
+    (conditional_jump && (register_read_a == 8'd0));
+
 
 /*
  * Control Unit
@@ -76,7 +83,8 @@ control control_unit (
     .ir_load(ir_load),
     .operand_load(operand_load),
     .register_write(register_write),
-    .pc_load(pc_load)
+    .pc_load(pc_load_control),
+    .conditional_jump(conditional_jump)
 );
 
 
