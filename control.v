@@ -25,10 +25,11 @@ reg [1:0] next_state;
 
 
 /*
- * LDI opcode
+ * Opcodes
  */
 
 localparam LDI = 4'b0101;
+localparam ADD = 4'b0110;
 
 
 /*
@@ -55,9 +56,9 @@ always @(*) begin
      * Default values.
      */
 
-    pc_increment  = 1'b0;
-    ir_load       = 1'b0;
-    operand_load  = 1'b0;
+    pc_increment   = 1'b0;
+    ir_load        = 1'b0;
+    operand_load   = 1'b0;
     register_write = 1'b0;
 
     next_state = state;
@@ -79,6 +80,8 @@ always @(*) begin
 
             if (instruction[7:4] == LDI)
                 next_state = FETCH_OPERAND;
+            else if (instruction[7:4] == ADD)
+                next_state = EXECUTE;
             else
                 next_state = FETCH;
 
@@ -98,6 +101,8 @@ always @(*) begin
         EXECUTE: begin
 
             if (instruction[7:4] == LDI)
+                register_write = 1'b1;
+            else if (instruction[7:4] == ADD)
                 register_write = 1'b1;
 
             next_state = FETCH;

@@ -2,126 +2,107 @@
 
 module control_tb;
 
-reg clock;
-reg reset;
+    reg clock;
+    reg reset;
+    reg [7:0] instruction;
 
-reg [7:0] instruction;
-
-wire pc_increment;
-wire ir_load;
-wire operand_load;
-wire register_write;
-
-
-control uut (
-    .clock(clock),
-    .reset(reset),
-    .instruction(instruction),
-
-    .pc_increment(pc_increment),
-    .ir_load(ir_load),
-    .operand_load(operand_load),
-    .register_write(register_write)
-);
+    wire pc_increment;
+    wire ir_load;
+    wire operand_load;
+    wire register_write;
 
 
-always #5 clock = ~clock;
+    control uut (
+        .clock(clock),
+        .reset(reset),
+        .instruction(instruction),
 
-
-initial begin
-
-    clock = 0;
-    reset = 0;
-
-    /*
-     * LDI R1
-     *
-     * opcode = 0101
-     * R1     = 01
-     *
-     * 0101 01 00 = 0x54
-     */
-
-    instruction = 8'h54;
+        .pc_increment(pc_increment),
+        .ir_load(ir_load),
+        .operand_load(operand_load),
+        .register_write(register_write)
+    );
 
 
     /*
-     * Reset control unit.
+     * Generate clock.
      */
 
-    reset = 1;
+    initial begin
+        clock = 0;
 
-    #10;
-
-    reset = 0;
+        forever #5 clock = ~clock;
+    end
 
 
     /*
-     * Display control signals as states advance.
+     * Test.
      */
 
-    #1;
+    initial begin
 
-    $display(
-        "state=%b  pc_inc=%b  ir_load=%b  operand_load=%b  reg_write=%b",
-        uut.state,
-        pc_increment,
-        ir_load,
-        operand_load,
-        register_write
-    );
+        /*
+         * Start with reset active.
+         */
 
+        reset = 1;
+        instruction = 8'h00;
 
-    #10;
+        #10;
 
-    $display(
-        "state=%b  pc_inc=%b  ir_load=%b  operand_load=%b  reg_write=%b",
-        uut.state,
-        pc_increment,
-        ir_load,
-        operand_load,
-        register_write
-    );
+        reset = 0;
 
 
-    #10;
+        /*
+         * Test LDI.
+         *
+         * Opcode = 0101
+         */
 
-    $display(
-        "state=%b  pc_inc=%b  ir_load=%b  operand_load=%b  reg_write=%b",
-        uut.state,
-        pc_increment,
-        ir_load,
-        operand_load,
-        register_write
-    );
+        instruction = 8'b0101_00_00;
 
-
-    #10;
-
-    $display(
-        "state=%b  pc_inc=%b  ir_load=%b  operand_load=%b  reg_write=%b",
-        uut.state,
-        pc_increment,
-        ir_load,
-        operand_load,
-        register_write
-    );
+        #40;
 
 
-    #10;
+        /*
+         * Test ADD.
+         *
+         * Opcode = 0110
+         *
+         * Destination = R1
+         * Source      = R2
+         *
+         * 0110 01 10
+         */
 
-    $display(
-        "state=%b  pc_inc=%b  ir_load=%b  operand_load=%b  reg_write=%b",
-        uut.state,
-        pc_increment,
-        ir_load,
-        operand_load,
-        register_write
-    );
+        instruction = 8'b0110_01_10;
+
+        #30;
 
 
-    $finish;
+        $finish;
 
-end
+    end
+
+
+    /*
+     * Display control signals.
+     */
+
+    initial begin
+
+        $monitor(
+            "time=%0t state=%b reset=%b instruction=%b pc_inc=%b ir_load=%b operand_load=%b reg_write=%b",
+            $time,
+            uut.state,
+            reset,
+            instruction,
+            pc_increment,
+            ir_load,
+            operand_load,
+            register_write
+        );
+
+    end
 
 endmodule
