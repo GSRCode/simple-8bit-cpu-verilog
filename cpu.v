@@ -22,6 +22,8 @@ wire ir_load;
 wire operand_load;
 wire register_write;
 
+wire pc_load;
+
 
 /*
  * Datapath signals
@@ -73,7 +75,8 @@ control control_unit (
     .pc_increment(pc_increment),
     .ir_load(ir_load),
     .operand_load(operand_load),
-    .register_write(register_write)
+    .register_write(register_write),
+    .pc_load(pc_load)
 );
 
 
@@ -85,8 +88,8 @@ pc pc_unit (
     .clock(clock),
     .reset(reset),
     .increment(pc_increment),
-    .load(1'b0),
-    .load_value(8'd0),
+    .load(pc_load),
+    .load_value(operand_value),
     .value(pc_value)
 );
 
