@@ -29,18 +29,33 @@ initial begin
     reset = 0;
 
 
+    /*
+    * Countdown program.
+    *
+    * R1 = 3
+    * R2 = 1
+    *
+    * loop:
+    *     SUB R1,R2
+    *     JZ R1,end
+    *     JMP loop
+    *
+    * end:
+    */
+
     uut.memory_unit.mem[0] = 8'h54; // LDI R1
-    //uut.memory_unit.mem[1] = 8'h00; // 0
-    uut.memory_unit.mem[1] = 8'h05; // R1 = 5
+    uut.memory_unit.mem[1] = 8'h03; // 3
 
-    uut.memory_unit.mem[2] = 8'hB4; // JZ R1
-    uut.memory_unit.mem[3] = 8'h06; // jump to address 6
+    uut.memory_unit.mem[2] = 8'h58; // LDI R2
+    uut.memory_unit.mem[3] = 8'h01; // 1
 
-    uut.memory_unit.mem[4] = 8'h58; // LDI R2
-    uut.memory_unit.mem[5] = 8'h0A; // 10
+    uut.memory_unit.mem[4] = 8'h76; // SUB R1,R2
 
-    uut.memory_unit.mem[6] = 8'h58; // LDI R2
-    uut.memory_unit.mem[7] = 8'h14; // 20
+    uut.memory_unit.mem[5] = 8'hB4; // JZ R1
+    uut.memory_unit.mem[6] = 8'h09; // end = address 9
+
+    uut.memory_unit.mem[7] = 8'hA0; // JMP
+    uut.memory_unit.mem[8] = 8'h04; // loop = address 4
 
     /*
      * Reset CPU.
@@ -57,7 +72,7 @@ initial begin
      * Allow program to execute.
      */
 
-    #160;
+    #400;
 
 
     /*
