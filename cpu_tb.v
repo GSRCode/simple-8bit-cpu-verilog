@@ -29,59 +29,14 @@ initial begin
     reset = 0;
 
 
-    /*
-     * Program:
-     *
-     * Address 0:
-     * LDI R1
-     *
-     * 0101 01 00 = 0x54
-     *
-     * Address 1:
-     * 25 = 0x19
-     */
+    uut.memory_unit.mem[0] = 8'h54; // LDI R1
+    uut.memory_unit.mem[1] = 8'h0C; // 12
 
-    uut.memory_unit.mem[0] = 8'h54;
-    uut.memory_unit.mem[1] = 8'h19;
+    uut.memory_unit.mem[2] = 8'h58; // LDI R2
+    uut.memory_unit.mem[3] = 8'h0A; // 10
 
-
-    /*
-     * Address 2:
-     * LDI R2
-     *
-     * 0101 10 00 = 0x58
-     *
-     * Address 3:
-     * 10 = 0x0A
-     */
-
-    uut.memory_unit.mem[2] = 8'h58;
-    uut.memory_unit.mem[3] = 8'h0A;
-
-
-    /*
-     * Address 4:
-     *
-     * ADD R1, R2
-     *
-     * 0110 01 10
-     *
-     * = 0x66
-     */
-
-    uut.memory_unit.mem[4] = 8'h66;
-
-    /*
-    * Address 5:
-    *
-    * SUB R1, R2
-    *
-    * 0111 01 10
-    *
-    * = 0x76
-    */
-
-    uut.memory_unit.mem[5] = 8'h76;
+    //uut.memory_unit.mem[4] = 8'h86; // AND R1,R2
+    uut.memory_unit.mem[4] = 8'h96; // OR R1,R2
 
 
     /*

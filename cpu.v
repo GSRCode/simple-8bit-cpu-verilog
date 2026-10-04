@@ -10,7 +10,8 @@ module cpu (
 localparam LDI = 4'b0101;
 localparam ADD = 4'b0110;
 localparam SUB = 4'b0111;
-
+localparam AND = 4'b1000;
+localparam OR  = 4'b1001;
 
 /*
  * Control signals
@@ -55,6 +56,8 @@ assign register_write_data =
 
 assign alu_operation =
     (ir_value[7:4] == SUB) ? 2'b01 :
+    (ir_value[7:4] == AND) ? 2'b10 :
+    (ir_value[7:4] == OR)  ? 2'b11 :
                              2'b00;
 
 
