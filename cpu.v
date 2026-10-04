@@ -9,6 +9,7 @@ module cpu (
 
 localparam LDI = 4'b0101;
 localparam ADD = 4'b0110;
+localparam SUB = 4'b0111;
 
 
 /*
@@ -38,6 +39,8 @@ wire       alu_zero;
 
 wire [7:0] register_write_data;
 
+wire [1:0] alu_operation;
+
 
 /*
  * Register write data selection.
@@ -49,6 +52,10 @@ wire [7:0] register_write_data;
 assign register_write_data =
     (ir_value[7:4] == LDI) ? operand_value :
                              alu_result;
+
+assign alu_operation =
+    (ir_value[7:4] == SUB) ? 2'b01 :
+                             2'b00;
 
 
 /*
@@ -143,8 +150,6 @@ registers registers_unit (
 /*
  * ALU
  *
- * For now operation is fixed to ADD.
- *
  * A = destination register
  * B = source register
  */
@@ -152,8 +157,7 @@ registers registers_unit (
 alu alu_unit (
     .a(register_read_a),
     .b(register_read_b),
-    .operation(2'b00),
-
+    .operation(alu_operation),
     .result(alu_result),
     .zero(alu_zero)
 );

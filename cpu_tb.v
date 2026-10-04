@@ -71,6 +71,18 @@ initial begin
 
     uut.memory_unit.mem[4] = 8'h66;
 
+    /*
+    * Address 5:
+    *
+    * SUB R1, R2
+    *
+    * 0111 01 10
+    *
+    * = 0x76
+    */
+
+    uut.memory_unit.mem[5] = 8'h76;
+
 
     /*
      * Reset CPU.
@@ -87,7 +99,7 @@ initial begin
      * Allow program to execute.
      */
 
-    #120;
+    #160;
 
 
     /*

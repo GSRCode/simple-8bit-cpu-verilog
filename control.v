@@ -30,6 +30,7 @@ reg [1:0] next_state;
 
 localparam LDI = 4'b0101;
 localparam ADD = 4'b0110;
+localparam SUB = 4'b0111;
 
 
 /*
@@ -82,6 +83,8 @@ always @(*) begin
                 next_state = FETCH_OPERAND;
             else if (instruction[7:4] == ADD)
                 next_state = EXECUTE;
+            else if (instruction[7:4] == SUB)
+                next_state = EXECUTE;
             else
                 next_state = FETCH;
 
@@ -103,6 +106,8 @@ always @(*) begin
             if (instruction[7:4] == LDI)
                 register_write = 1'b1;
             else if (instruction[7:4] == ADD)
+                register_write = 1'b1;
+            else if (instruction[7:4] == SUB)
                 register_write = 1'b1;
 
             next_state = FETCH;
