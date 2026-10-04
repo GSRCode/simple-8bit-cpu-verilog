@@ -16,16 +16,15 @@ module control (
  * CPU states
  */
 
-localparam FETCH         = 2'b00;
-localparam DECODE        = 2'b01;
-localparam FETCH_OPERAND = 2'b10;
-localparam EXECUTE       = 2'b11;
+localparam FETCH         = 3'b000;
+localparam DECODE        = 3'b001;
+localparam FETCH_OPERAND = 3'b010;
+localparam EXECUTE       = 3'b011;
+localparam HALT          = 3'b100;
 
 
-
-reg [1:0] state;
-reg [1:0] next_state;
-
+reg [2:0] state;
+reg [2:0] next_state;
 
 /*
  * Opcodes
@@ -38,6 +37,7 @@ localparam AND = 4'b1000;
 localparam OR  = 4'b1001;
 localparam JZ  = 4'b1011;
 localparam JMP = 4'b1010;
+localparam HLT = 4'b1100;
 
 /*
  * State register.
@@ -101,6 +101,8 @@ always @(*) begin
                 next_state = EXECUTE;
             else if (instruction[7:4] == OR)
                 next_state = EXECUTE;
+            else if (instruction[7:4] == HLT)
+                next_state = EXECUTE;
             else
                 next_state = FETCH;
 
@@ -133,9 +135,15 @@ always @(*) begin
                 pc_load = 1'b1;
             else if (instruction[7:4] == JZ)
                 conditional_jump = 1'b1;
+             
+            if (instruction[7:4] == HLT)
+                next_state = HALT;
+            else
+                next_state = FETCH;
+        end
 
-            next_state = FETCH;
-
+        HALT: begin
+            next_state = HALT;
         end
 
     endcase

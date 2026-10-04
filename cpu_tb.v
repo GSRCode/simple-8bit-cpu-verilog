@@ -57,6 +57,8 @@ initial begin
     uut.memory_unit.mem[7] = 8'hA0; // JMP
     uut.memory_unit.mem[8] = 8'h04; // loop = address 4
 
+    uut.memory_unit.mem[9] = 8'hC0; // HLT
+
     /*
      * Reset CPU.
      */
