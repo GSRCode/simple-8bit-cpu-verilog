@@ -7,14 +7,15 @@ module cpu (
  * Opcodes
  */
 
-localparam LDI = 4'b0101;
-localparam ADD = 4'b0110;
-localparam SUB = 4'b0111;
-localparam AND = 4'b1000;
-localparam OR  = 4'b1001;
-localparam JZ  = 4'b1011;
+localparam LDI   = 4'b0101;
+localparam ADD   = 4'b0110;
+localparam SUB   = 4'b0111;
+localparam AND   = 4'b1000;
+localparam OR    = 4'b1001;
+localparam JZ    = 4'b1011;
 localparam LOAD  = 4'b1101;
 localparam STORE = 4'b1110;
+
 
 /*
  * Control signals
@@ -55,10 +56,45 @@ wire [7:0] memory_address;
 
 
 /*
+ * Zero flag
+ *
+ * Stores the zero result produced by the most recent
+ * arithmetic or logic instruction.
+ */
+
+reg zero_flag;
+
+
+/*
+ * Update zero flag after ALU instructions.
+ */
+
+always @(posedge clock) begin
+
+    if (reset) begin
+
+        zero_flag <= 1'b0;
+
+    end
+    else if (register_write &&
+            ((ir_value[7:4] == ADD) ||
+             (ir_value[7:4] == SUB) ||
+             (ir_value[7:4] == AND) ||
+             (ir_value[7:4] == OR))) begin
+
+        zero_flag <= alu_zero;
+
+    end
+
+end
+
+
+/*
  * Register write data selection.
  *
  * LDI writes the operand register.
- * ADD writes the ALU result.
+ * LOAD writes memory data.
+ * Arithmetic and logic instructions write ALU result.
  */
 
 assign register_write_data =
@@ -66,21 +102,46 @@ assign register_write_data =
     (ir_value[7:4] == LOAD) ? memory_read_data :
                               alu_result;
 
+
+/*
+ * Memory address selection.
+ *
+ * Normally memory is addressed by PC.
+ *
+ * During LOAD or STORE execution, memory is
+ * addressed by the operand register.
+ */
+
 assign memory_address =
     ((ir_value[7:4] == LOAD  && register_write) ||
      (ir_value[7:4] == STORE && memory_write))
         ? operand_value
         : pc_value;
-        
+
+
+/*
+ * ALU operation selection.
+ */
+
 assign alu_operation =
     (ir_value[7:4] == SUB) ? 2'b01 :
     (ir_value[7:4] == AND) ? 2'b10 :
     (ir_value[7:4] == OR)  ? 2'b11 :
                              2'b00;
 
+
+/*
+ * Program counter load.
+ *
+ * JMP loads PC unconditionally.
+ *
+ * JZ loads PC only when the stored zero flag
+ * from the previous ALU operation is set.
+ */
+
 assign pc_load =
     pc_load_control ||
-    (conditional_jump && (register_read_a == 8'd0));
+    (conditional_jump && zero_flag);
 
 
 /*

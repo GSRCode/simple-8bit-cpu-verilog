@@ -32,109 +32,101 @@ module cpu_tb;
 
 
         /*
-         * Program:
-         *
-         * R1 = 5
-         * RAM[100] = R1
-         *
-         * R2 = 1
-         *
-         * loop:
-         *     R1 = RAM[100]
-         *     R1 = R1 - R2
-         *     RAM[100] = R1
-         *
-         *     if R1 == 0
-         *         goto done
-         *
-         *     goto loop
-         *
-         * done:
-         *     HLT
-         */
+        * Final CPU test program
+        *
+        * Calculate:
+        *
+        *     5 + 4 + 3 + 2 + 1
+        *
+        * Store result in RAM[100].
+        *
+        * Registers:
+        *
+        * R1 = sum
+        * R2 = counter
+        * R3 = constant 1
+        */
 
-
-        /*
-         * Address 0
-         *
-         * LDI R1, 5
-         */
+        //
+        // Address 0
+        //
+        // LDI R1, 0
+        //
         uut.memory_unit.mem[0] = 8'h54;
-        uut.memory_unit.mem[1] = 8'd5;
+        uut.memory_unit.mem[1] = 8'd0;
 
 
-        /*
-         * Address 2
-         *
-         * STORE R1, [100]
-         */
-        uut.memory_unit.mem[2] = 8'hE4;
-        uut.memory_unit.mem[3] = 8'd100;
+        //
+        // Address 2
+        //
+        // LDI R2, 5
+        //
+        uut.memory_unit.mem[2] = 8'h58;
+        uut.memory_unit.mem[3] = 8'd5;
 
 
-        /*
-         * Address 4
-         *
-         * LDI R2, 1
-         */
-        uut.memory_unit.mem[4] = 8'h58;
+        //
+        // Address 4
+        //
+        // LDI R3, 1
+        //
+        uut.memory_unit.mem[4] = 8'h5C;
         uut.memory_unit.mem[5] = 8'd1;
 
 
-        /*
-         * Address 6
-         *
-         * loop:
-         *
-         * LOAD R1, [100]
-         */
-        uut.memory_unit.mem[6] = 8'hD4;
-        uut.memory_unit.mem[7] = 8'd100;
+        //
+        // loop:
+        //
+        // Address 6
+        //
+        // ADD R1, R2
+        //
+        uut.memory_unit.mem[6] = 8'h66;
 
 
-        /*
-         * Address 8
-         *
-         * SUB R1, R2
-         */
-        uut.memory_unit.mem[8] = 8'h76;
+        //
+        // Address 7
+        //
+        // SUB R2, R3
+        //
+        uut.memory_unit.mem[7] = 8'h7B;
 
 
-        /*
-         * Address 9
-         *
-         * STORE R1, [100]
-         */
-        uut.memory_unit.mem[9]  = 8'hE4;
-        uut.memory_unit.mem[10] = 8'd100;
+        //
+        // Address 8
+        //
+        // JZ done
+        //
+        uut.memory_unit.mem[8] = 8'hB0;
+        uut.memory_unit.mem[9] = 8'd12;
 
 
-        /*
-         * Address 11
-         *
-         * JZ done
-         */
-        uut.memory_unit.mem[11] = 8'hB0;
-        uut.memory_unit.mem[12] = 8'd15;
+        //
+        // Address 10
+        //
+        // JMP loop
+        //
+        uut.memory_unit.mem[10] = 8'hA0;
+        uut.memory_unit.mem[11] = 8'd6;
 
 
-        /*
-         * Address 13
-         *
-         * JMP loop
-         */
-        uut.memory_unit.mem[13] = 8'hA0;
-        uut.memory_unit.mem[14] = 8'd6;
+        //
+        // done:
+        //
+        // Address 12
+        //
+        // STORE R1, [100]
+        //
+        uut.memory_unit.mem[12] = 8'hE4;
+        uut.memory_unit.mem[13] = 8'd100;
 
 
-        /*
-         * Address 15
-         *
-         * done:
-         *
-         * HLT
-         */
-        uut.memory_unit.mem[15] = 8'hC0;
+        //
+        // Address 14
+        //
+        // HLT
+        //
+        uut.memory_unit.mem[14] = 8'hC0;
 
 
         /*
@@ -186,10 +178,11 @@ module cpu_tb;
         #1000;
 
         $display("");
-        $display("Final values:");
-        $display("R1       = %0d", uut.registers_unit.r1);
-        $display("R2       = %0d", uut.registers_unit.r2);
-        $display("RAM[100] = %0d", uut.memory_unit.mem[100]);
+        $display("Final program results:");
+        $display("R1 (sum)     = %0d", uut.registers_unit.r1);
+        $display("R2 (counter) = %0d", uut.registers_unit.r2);
+        $display("R3 (one)     = %0d", uut.registers_unit.r3);
+        $display("RAM[100]     = %0d", uut.memory_unit.mem[100]);
 
         $finish;
 
