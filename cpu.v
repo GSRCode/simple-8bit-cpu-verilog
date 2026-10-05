@@ -13,6 +13,8 @@ localparam SUB = 4'b0111;
 localparam AND = 4'b1000;
 localparam OR  = 4'b1001;
 localparam JZ  = 4'b1011;
+localparam LOAD  = 4'b1101;
+localparam STORE = 4'b1110;
 
 /*
  * Control signals
@@ -26,6 +28,8 @@ wire register_write;
 wire pc_load;
 wire pc_load_control;
 wire conditional_jump;
+
+wire memory_write;
 
 
 /*
@@ -47,6 +51,8 @@ wire [7:0] register_write_data;
 
 wire [1:0] alu_operation;
 
+wire [7:0] memory_address;
+
 
 /*
  * Register write data selection.
@@ -56,9 +62,16 @@ wire [1:0] alu_operation;
  */
 
 assign register_write_data =
-    (ir_value[7:4] == LDI) ? operand_value :
-                             alu_result;
+    (ir_value[7:4] == LDI)  ? operand_value :
+    (ir_value[7:4] == LOAD) ? memory_read_data :
+                              alu_result;
 
+assign memory_address =
+    ((ir_value[7:4] == LOAD  && register_write) ||
+     (ir_value[7:4] == STORE && memory_write))
+        ? operand_value
+        : pc_value;
+        
 assign alu_operation =
     (ir_value[7:4] == SUB) ? 2'b01 :
     (ir_value[7:4] == AND) ? 2'b10 :
@@ -84,7 +97,8 @@ control control_unit (
     .operand_load(operand_load),
     .register_write(register_write),
     .pc_load(pc_load_control),
-    .conditional_jump(conditional_jump)
+    .conditional_jump(conditional_jump),
+    .memory_write(memory_write)
 );
 
 
@@ -108,9 +122,9 @@ pc pc_unit (
 
 memory memory_unit (
     .clock(clock),
-    .write_enable(1'b0),
-    .address(pc_value),
-    .write_data(8'd0),
+    .write_enable(memory_write),
+    .address(memory_address),
+    .write_data(register_read_a),
     .read_data(memory_read_data)
 );
 

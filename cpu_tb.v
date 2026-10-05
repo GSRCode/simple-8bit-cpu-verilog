@@ -29,35 +29,19 @@ initial begin
     reset = 0;
 
 
-    /*
-    * Countdown program.
-    *
-    * R1 = 3
-    * R2 = 1
-    *
-    * loop:
-    *     SUB R1,R2
-    *     JZ R1,end
-    *     JMP loop
-    *
-    * end:
-    */
-
     uut.memory_unit.mem[0] = 8'h54; // LDI R1
-    uut.memory_unit.mem[1] = 8'h03; // 3
+    uut.memory_unit.mem[1] = 8'h2A; // 42
 
-    uut.memory_unit.mem[2] = 8'h58; // LDI R2
-    uut.memory_unit.mem[3] = 8'h01; // 1
+    uut.memory_unit.mem[2] = 8'hE4; // STORE R1
+    uut.memory_unit.mem[3] = 8'h64; // address 100
 
-    uut.memory_unit.mem[4] = 8'h76; // SUB R1,R2
+    uut.memory_unit.mem[4] = 8'h54; // LDI R1
+    uut.memory_unit.mem[5] = 8'h00; // 0
 
-    uut.memory_unit.mem[5] = 8'hB4; // JZ R1
-    uut.memory_unit.mem[6] = 8'h09; // end = address 9
+    uut.memory_unit.mem[6] = 8'hD4; // LOAD R1
+    uut.memory_unit.mem[7] = 8'h64; // address 100
 
-    uut.memory_unit.mem[7] = 8'hA0; // JMP
-    uut.memory_unit.mem[8] = 8'h04; // loop = address 4
-
-    uut.memory_unit.mem[9] = 8'hC0; // HLT
+    uut.memory_unit.mem[8] = 8'hC0; // HLT
 
     /*
      * Reset CPU.
@@ -87,6 +71,9 @@ initial begin
     $display("R1 = %0d", uut.registers_unit.r1);
     $display("R2 = %0d", uut.registers_unit.r2);
     $display("R3 = %0d", uut.registers_unit.r3);
+
+    $display("R1       = %0d", uut.registers_unit.r1);
+    $display("RAM[100] = %0d", uut.memory_unit.mem[100]);
 
     $finish;
 
