@@ -8,6 +8,18 @@ module memory (
 
 reg [7:0] mem [0:255];
 
+// Initialize RAM with our program
+
+integer i;
+
+initial begin
+    for (i = 0; i < 256; i = i + 1)
+        mem[i] = 8'h00;
+
+    $readmemh("program.hex", mem, 0, 5);
+end
+
+
 
 /*
  * Read from memory.

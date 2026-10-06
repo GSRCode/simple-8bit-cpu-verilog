@@ -1,6 +1,10 @@
 module cpu (
     input clock,
-    input reset
+    input reset,
+
+    output [7:0] debug_pc,
+    output [7:0] debug_ir,
+    output [7:0] debug_alu_result
 );
 
 /*
@@ -142,6 +146,11 @@ assign alu_operation =
 assign pc_load =
     pc_load_control ||
     (conditional_jump && zero_flag);
+
+
+assign debug_pc = pc_value;
+assign debug_ir = ir_value;
+assign debug_alu_result = alu_result;
 
 
 /*
