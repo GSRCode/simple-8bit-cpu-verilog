@@ -9,13 +9,16 @@ module registers (
     input  [7:0] write_data,
 
     output [7:0] read_data_a,
-    output [7:0] read_data_b
+    output [7:0] read_data_b,
+    output [7:0] debug_r0
 );
 
 reg [7:0] r0;
 reg [7:0] r1;
 reg [7:0] r2;
 reg [7:0] r3;
+
+assign debug_r0 = r0;
 
 assign read_data_a =
     (read_addr_a == 2'b00) ? r0 :

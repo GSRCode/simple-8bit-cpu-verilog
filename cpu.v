@@ -4,7 +4,8 @@ module cpu (
 
     output [7:0] debug_pc,
     output [7:0] debug_ir,
-    output [7:0] debug_alu_result
+    output [7:0] debug_alu_result,
+    output [7:0] debug_r0
 );
 
 /*
@@ -241,7 +242,9 @@ registers registers_unit (
     .write_data(register_write_data),
 
     .read_data_a(register_read_a),
-    .read_data_b(register_read_b)
+    .read_data_b(register_read_b),
+
+    .debug_r0(debug_r0)
 );
 
 
